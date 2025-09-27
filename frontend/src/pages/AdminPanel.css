@@ -1,0 +1,466 @@
+.admin-panel {
+  min-height: calc(100vh - 64px);
+  padding: 2rem 0;
+  background-color: #f8fafc;
+}
+
+/* Admin Header */
+.admin-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.admin-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #2d3748;
+  margin-bottom: 0.5rem;
+}
+
+.admin-subtitle {
+  color: #718096;
+  font-size: 1.1rem;
+}
+
+/* Access Denied */
+.access-denied {
+  text-align: center;
+  padding: 4rem 0;
+}
+
+.access-denied h1 {
+  font-size: 2rem;
+  color: #e53e3e;
+  margin-bottom: 1rem;
+}
+
+.access-denied p {
+  color: #718096;
+  font-size: 1.1rem;
+}
+
+/* Tabs */
+.admin-tabs {
+  display: flex;
+  background: white;
+  border-radius: 12px 12px 0 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e2e8f0;
+  border-bottom: none;
+  overflow: hidden;
+}
+
+.tab-button {
+  background: none;
+  border: none;
+  padding: 1rem 2rem;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  color: #718096;
+  flex: 1;
+}
+
+.tab-button:hover {
+  background-color: #f7fafc;
+}
+
+.tab-button.active {
+  background-color: #667eea;
+  color: white;
+}
+
+/* Tab Content */
+.tab-content {
+  background: white;
+  border-radius: 0 0 12px 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e2e8f0;
+  border-top: none;
+  padding: 2rem;
+}
+
+/* Admin Sections */
+.admin-section {
+  margin-bottom: 3rem;
+}
+
+.admin-section:last-child {
+  margin-bottom: 0;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.section-actions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.section-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #2d3748;
+  margin: 0;
+}
+
+/* Add Product Form */
+.add-product-form {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+}
+
+.form-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #2d3748;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.form-group-full {
+  grid-column: span 2;
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+/* Nutrition Section */
+.nutrition-section {
+  margin-bottom: 2rem;
+}
+
+.nutrition-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #2d3748;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.nutrition-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+/* Form Actions */
+.form-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e2e8f0;
+}
+
+.form-actions .btn {
+  min-width: 120px;
+}
+
+/* Products Grid */
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.5rem;
+}
+
+.no-products {
+  text-align: center;
+  padding: 3rem 0;
+  color: #718096;
+  font-size: 1.1rem;
+}
+
+/* Analytics */
+.analytics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+.analytics-card {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e2e8f0;
+}
+
+.rating-badge-large {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem;
+  border-radius: 12px;
+  color: white;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.rating-badge-large .rating-letter {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.rating-badge-large .rating-name {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 0.5rem;
+}
+
+.analytics-data {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.analytics-count {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #2d3748;
+  line-height: 1;
+}
+
+.analytics-label {
+  font-size: 0.9rem;
+  color: #718096;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 0.25rem;
+}
+
+/* Analytics Sections */
+.analytics-section {
+  margin-bottom: 2rem;
+}
+
+.analytics-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #2d3748;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.category-analytics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  max-width: 100%;
+}
+
+.category-stat {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  background: #f8fafc;
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  min-height: 60px;
+}
+
+.category-name {
+  font-weight: 500;
+  color: #2d3748;
+  text-align: left;
+}
+
+.category-count {
+  color: #667eea;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-group-full {
+    grid-column: span 1;
+  }
+
+  .nutrition-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .products-grid {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  }
+
+  .analytics-grid {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .admin-panel {
+    padding: 1rem 0;
+  }
+
+  .admin-title {
+    font-size: 2rem;
+  }
+
+  .admin-subtitle {
+    font-size: 1rem;
+  }
+
+  .tab-content {
+    padding: 1.5rem;
+  }
+
+  .section-header {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+  }
+
+  .add-product-form {
+    padding: 1.5rem;
+  }
+
+  .nutrition-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-actions {
+    flex-direction: column;
+  }
+
+  .form-actions .btn {
+    width: 100%;
+  }
+
+  .analytics-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .category-analytics {
+    grid-template-columns: 1fr;
+  }
+
+  .tab-button {
+    padding: 0.75rem 1rem;
+    font-size: 0.9rem;
+  }
+}
+
+/* Edit Product Form Styling */
+.edit-product-form {
+  border: 2px solid #3b82f6;
+  background: linear-gradient(135deg, #dbeafe 0%, #e0f2fe 100%);
+}
+
+.edit-product-form .form-title {
+  color: #1e40af;
+  border-bottom: 2px solid #3b82f6;
+  padding-bottom: 0.75rem;
+}
+
+.edit-product-form .btn-primary {
+  background-color: #3b82f6;
+  border-color: #3b82f6;
+}
+
+.edit-product-form .btn-primary:hover {
+  background-color: #2563eb;
+  border-color: #2563eb;
+}
+
+@media (max-width: 480px) {
+  .admin-panel {
+    padding: 0.5rem 0;
+  }
+
+  .tab-content {
+    padding: 1rem;
+    margin: 0 0.5rem;
+    border-radius: 0 0 8px 8px;
+  }
+
+  .admin-tabs {
+    margin: 0 0.5rem;
+    border-radius: 8px 8px 0 0;
+  }
+
+  .add-product-form {
+    padding: 1rem;
+  }
+
+  .products-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .analytics-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .rating-badge-large {
+    flex-direction: row;
+    justify-content: center;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  .rating-badge-large .rating-letter {
+    font-size: 1.5rem;
+  }
+
+  .rating-badge-large .rating-name {
+    margin-top: 0;
+    font-size: 0.8rem;
+  }
+
+  .analytics-count {
+    font-size: 1.5rem;
+  }
+
+  .category-stat {
+    grid-template-columns: 1fr auto;
+    min-height: 50px;
+    padding: 0.75rem 1rem;
+  }
+  
+  .category-name {
+    font-size: 0.9rem;
+  }
+  
+  .category-count {
+    font-size: 0.85rem;
+  }
+
+  .tab-button {
+    padding: 1rem 0.5rem;
+    font-size: 0.85rem;
+  }
+}
