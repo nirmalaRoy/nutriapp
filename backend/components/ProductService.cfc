@@ -477,4 +477,232 @@
         </cftry>
     </cffunction>
 
+    <!--- Chart Statistics Methods --->
+    <cffunction name="getRatingStatistics" returntype="query" access="public" output="false">
+        <cftry>
+            <!--- Get all products --->
+            <cfset var result = variables.dataService.executeQuery(
+                collection = "products",
+                operation = "find",
+                query = {}
+            )>
+            
+            <cfif NOT result.success>
+                <cfthrow type="ProductService.Statistics" message="Failed to retrieve products" detail="#result.error#">
+            </cfif>
+            
+            <!--- Process data to calculate rating statistics --->
+            <cfset var ratingCounts = {}>
+            <cfloop array="#result.data#" index="product">
+                <cfif structKeyExists(product, "rating") AND len(product.rating)>
+                    <cfif NOT structKeyExists(ratingCounts, product.rating)>
+                        <cfset ratingCounts[product.rating] = 0>
+                    </cfif>
+                    <cfset ratingCounts[product.rating] = ratingCounts[product.rating] + 1>
+                </cfif>
+            </cfloop>
+            
+            <!--- Convert to query for chart compatibility --->
+            <cfset var statsQuery = queryNew("rating,count", "varchar,integer")>
+            <cfloop collection="#ratingCounts#" item="rating">
+                <cfset queryAddRow(statsQuery)>
+                <cfset querySetCell(statsQuery, "rating", rating)>
+                <cfset querySetCell(statsQuery, "count", ratingCounts[rating])>
+            </cfloop>
+            
+            <cfreturn statsQuery>
+        <cfcatch type="any">
+            <cfthrow type="ProductService.Statistics" message="Failed to get rating statistics" detail="#cfcatch.message#">
+        </cfcatch>
+        </cftry>
+    </cffunction>
+
+    <cffunction name="getCategoryStatistics" returntype="query" access="public" output="false">
+        <cftry>
+            <!--- Get all products --->
+            <cfset var result = variables.dataService.executeQuery(
+                collection = "products",
+                operation = "find",
+                query = {}
+            )>
+            
+            <cfif NOT result.success>
+                <cfthrow type="ProductService.Statistics" message="Failed to retrieve products" detail="#result.error#">
+            </cfif>
+            
+            <!--- Process data to calculate category statistics --->
+            <cfset var categoryCounts = {}>
+            <cfloop array="#result.data#" index="product">
+                <cfif structKeyExists(product, "category") AND len(product.category)>
+                    <cfif NOT structKeyExists(categoryCounts, product.category)>
+                        <cfset categoryCounts[product.category] = 0>
+                    </cfif>
+                    <cfset categoryCounts[product.category] = categoryCounts[product.category] + 1>
+                </cfif>
+            </cfloop>
+            
+            <!--- Convert to query and sort by count DESC --->
+            <cfset var statsQuery = queryNew("category,count", "varchar,integer")>
+            <cfloop collection="#categoryCounts#" item="category">
+                <cfset queryAddRow(statsQuery)>
+                <cfset querySetCell(statsQuery, "category", category)>
+                <cfset querySetCell(statsQuery, "count", categoryCounts[category])>
+            </cfloop>
+            
+            <cfreturn statsQuery>
+        <cfcatch type="any">
+            <cfthrow type="ProductService.Statistics" message="Failed to get category statistics" detail="#cfcatch.message#">
+        </cfcatch>
+        </cftry>
+    </cffunction>
+
+    <cffunction name="getPriceRangeStatistics" returntype="query" access="public" output="false">
+        <cftry>
+            <!--- Get all products --->
+            <cfset var result = variables.dataService.executeQuery(
+                collection = "products",
+                operation = "find",
+                query = {}
+            )>
+            
+            <cfif NOT result.success>
+                <cfthrow type="ProductService.Statistics" message="Failed to retrieve products" detail="#result.error#">
+            </cfif>
+            
+            <!--- Process data to calculate price range statistics --->
+            <cfset var priceRangeCounts = {
+                "$0-5": 0,
+                "$5-10": 0,
+                "$10-15": 0,
+                "$15-20": 0,
+                "$20+": 0
+            }>
+            
+            <cfloop array="#result.data#" index="product">
+                <cfif structKeyExists(product, "price") AND isNumeric(product.price)>
+                    <cfset var price = product.price>
+                    <cfif price LT 5>
+                        <cfset priceRangeCounts["$0-5"] = priceRangeCounts["$0-5"] + 1>
+                    <cfelseif price LT 10>
+                        <cfset priceRangeCounts["$5-10"] = priceRangeCounts["$5-10"] + 1>
+                    <cfelseif price LT 15>
+                        <cfset priceRangeCounts["$10-15"] = priceRangeCounts["$10-15"] + 1>
+                    <cfelseif price LT 20>
+                        <cfset priceRangeCounts["$15-20"] = priceRangeCounts["$15-20"] + 1>
+                    <cfelse>
+                        <cfset priceRangeCounts["$20+"] = priceRangeCounts["$20+"] + 1>
+                    </cfif>
+                </cfif>
+            </cfloop>
+            
+            <!--- Convert to query in proper order --->
+            <cfset var statsQuery = queryNew("price_range,count", "varchar,integer")>
+            <cfset var ranges = ["$0-5", "$5-10", "$10-15", "$15-20", "$20+"]>
+            <cfloop array="#ranges#" index="range">
+                <cfset queryAddRow(statsQuery)>
+                <cfset querySetCell(statsQuery, "price_range", range)>
+                <cfset querySetCell(statsQuery, "count", priceRangeCounts[range])>
+            </cfloop>
+            
+            <cfreturn statsQuery>
+        <cfcatch type="any">
+            <cfthrow type="ProductService.Statistics" message="Failed to get price range statistics" detail="#cfcatch.message#">
+        </cfcatch>
+        </cftry>
+    </cffunction>
+
+    <cffunction name="getTopRatedProducts" returntype="query" access="public" output="false">
+        <cftry>
+            <!--- Get all products --->
+            <cfset var result = variables.dataService.executeQuery(
+                collection = "products",
+                operation = "find",
+                query = {}
+            )>
+            
+            <cfif NOT result.success>
+                <cfthrow type="ProductService.Statistics" message="Failed to retrieve products" detail="#result.error#">
+            </cfif>
+            
+            <!--- Filter and sort top rated products --->
+            <cfset var topRatedProducts = []>
+            <cfloop array="#result.data#" index="product">
+                <cfif structKeyExists(product, "rating") AND listFindNoCase("A,B", product.rating)>
+                    <cfset arrayAppend(topRatedProducts, product)>
+                </cfif>
+            </cfloop>
+            
+            <!--- Sort by rating (A first, then B), then by name, limit to 10 --->
+            <cfset var statsQuery = queryNew("name,brand,rating", "varchar,varchar,varchar")>
+            <cfset var count = 0>
+            
+            <!--- Add A-rated products first --->
+            <cfloop array="#topRatedProducts#" index="product">
+                <cfif product.rating EQ "A" AND count LT 10>
+                    <cfset queryAddRow(statsQuery)>
+                    <cfset querySetCell(statsQuery, "name", product.name)>
+                    <cfset querySetCell(statsQuery, "brand", product.brand)>
+                    <cfset querySetCell(statsQuery, "rating", product.rating)>
+                    <cfset count = count + 1>
+                </cfif>
+            </cfloop>
+            
+            <!--- Add B-rated products if space remains --->
+            <cfloop array="#topRatedProducts#" index="product">
+                <cfif product.rating EQ "B" AND count LT 10>
+                    <cfset queryAddRow(statsQuery)>
+                    <cfset querySetCell(statsQuery, "name", product.name)>
+                    <cfset querySetCell(statsQuery, "brand", product.brand)>
+                    <cfset querySetCell(statsQuery, "rating", product.rating)>
+                    <cfset count = count + 1>
+                </cfif>
+            </cfloop>
+            
+            <cfreturn statsQuery>
+        <cfcatch type="any">
+            <cfthrow type="ProductService.Statistics" message="Failed to get top rated products" detail="#cfcatch.message#">
+        </cfcatch>
+        </cftry>
+    </cffunction>
+
+    <cffunction name="getCategoryRatingStatistics" returntype="query" access="public" output="false">
+        <cfargument name="category" type="string" required="true">
+        <cftry>
+            <!--- Get products in the specified category --->
+            <cfset var result = variables.dataService.executeQuery(
+                collection = "products",
+                operation = "find",
+                query = {"category": arguments.category}
+            )>
+            
+            <cfif NOT result.success>
+                <cfthrow type="ProductService.Statistics" message="Failed to retrieve products for category" detail="#result.error#">
+            </cfif>
+            
+            <!--- Process data to calculate rating statistics for this category --->
+            <cfset var ratingCounts = {}>
+            <cfloop array="#result.data#" index="product">
+                <cfif structKeyExists(product, "rating") AND len(product.rating)>
+                    <cfif NOT structKeyExists(ratingCounts, product.rating)>
+                        <cfset ratingCounts[product.rating] = 0>
+                    </cfif>
+                    <cfset ratingCounts[product.rating] = ratingCounts[product.rating] + 1>
+                </cfif>
+            </cfloop>
+            
+            <!--- Convert to query for chart compatibility --->
+            <cfset var statsQuery = queryNew("rating,count", "varchar,integer")>
+            <cfloop collection="#ratingCounts#" item="rating">
+                <cfset queryAddRow(statsQuery)>
+                <cfset querySetCell(statsQuery, "rating", rating)>
+                <cfset querySetCell(statsQuery, "count", ratingCounts[rating])>
+            </cfloop>
+            
+            <cfreturn statsQuery>
+        <cfcatch type="any">
+            <cfthrow type="ProductService.Statistics" message="Failed to get category rating statistics" detail="#cfcatch.message#">
+        </cfcatch>
+        </cftry>
+    </cffunction>
+
 </cfcomponent>

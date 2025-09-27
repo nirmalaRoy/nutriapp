@@ -20,7 +20,12 @@
     <cfif cgi.request_method EQ "GET">
         
         <!--- Check for pathInfo to handle different endpoints --->
-        <cfset pathInfo = structKeyExists(url, "pathInfo") ? url.pathInfo : "">
+        <cfset pathInfo = "">
+        <cfif structKeyExists(url, "pathInfo")>
+            <cfset pathInfo = url.pathInfo>
+        <cfelseif structKeyExists(cgi, "PATH_INFO") AND len(cgi.PATH_INFO)>
+            <cfset pathInfo = cgi.PATH_INFO>
+        </cfif>
         
         <!--- Handle categories endpoint --->
         <cfif pathInfo EQ "/categories">
@@ -348,7 +353,12 @@
         
     <!--- Handle PUT request (Update Product) --->
     <cfelseif cgi.request_method EQ "PUT">
-        <cfset pathInfo = structKeyExists(url, "pathInfo") ? url.pathInfo : "">
+        <cfset pathInfo = "">
+        <cfif structKeyExists(url, "pathInfo")>
+            <cfset pathInfo = url.pathInfo>
+        <cfelseif structKeyExists(cgi, "PATH_INFO") AND len(cgi.PATH_INFO)>
+            <cfset pathInfo = cgi.PATH_INFO>
+        </cfif>
         
         <!--- Extract product ID from path --->
         <cfif len(pathInfo) GT 1 AND left(pathInfo, 1) EQ "/">
@@ -411,7 +421,12 @@
         
     <!--- Handle DELETE request (Delete Product) --->
     <cfelseif cgi.request_method EQ "DELETE">
-        <cfset pathInfo = structKeyExists(url, "pathInfo") ? url.pathInfo : "">
+        <cfset pathInfo = "">
+        <cfif structKeyExists(url, "pathInfo")>
+            <cfset pathInfo = url.pathInfo>
+        <cfelseif structKeyExists(cgi, "PATH_INFO") AND len(cgi.PATH_INFO)>
+            <cfset pathInfo = cgi.PATH_INFO>
+        </cfif>
         
         <!--- Extract product ID from path --->
         <cfif len(pathInfo) GT 1 AND left(pathInfo, 1) EQ "/">

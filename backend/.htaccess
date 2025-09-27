@@ -1,9 +1,20 @@
 RewriteEngine On
 
+# Allow access to all files in /api/ directory
+<Directory "/api/">
+    Options FollowSymLinks
+    AllowOverride None
+    Require all granted
+</Directory>
+
+# Chart API Routes - now in charts subdirectory
+RewriteRule ^api/charts/(.+)\.cfm$ /api/charts/$1.cfm [L]
+
 # API Routes for Products
 RewriteRule ^api/products/search/?$ /api/products.cfm [QSA,L,E=PATH_INFO:/search]
 RewriteRule ^api/products/categories/?$ /api/products.cfm [QSA,L,E=PATH_INFO:/categories]
 RewriteRule ^api/products/ratings/?$ /api/products.cfm [QSA,L,E=PATH_INFO:/ratings]
+# Chart routes now handled by direct API files above
 RewriteRule ^api/products/suggestions/([^/]+)/?$ /api/products.cfm [QSA,L,E=PATH_INFO:/suggestions/$1]
 RewriteRule ^api/products/([^/]+)/?$ /api/products.cfm [QSA,L,E=PATH_INFO:/$1]
 RewriteRule ^api/products/?$ /api/products.cfm [QSA,L,E=PATH_INFO:/api/products]
