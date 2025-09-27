@@ -1,0 +1,14 @@
+{
+    "name":"nutri-app",
+    "openbrowser":false,
+    "web":{
+        "http":{
+            "port":"8051"
+        }
+    },
+    "app":{
+        "cfengine":"lucee@5"
+    },
+    "port=8051":true,
+    "name=nutriapp-backend":true
+}

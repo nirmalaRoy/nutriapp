@@ -1,0 +1,16 @@
+RewriteEngine On
+
+# API Routes for Products
+RewriteRule ^api/products/search/?$ /api/products.cfm [QSA,L,E=PATH_INFO:/search]
+RewriteRule ^api/products/categories/?$ /api/products.cfm [QSA,L,E=PATH_INFO:/categories]
+RewriteRule ^api/products/ratings/?$ /api/products.cfm [QSA,L,E=PATH_INFO:/ratings]
+RewriteRule ^api/products/suggestions/([^/]+)/?$ /api/products.cfm [QSA,L,E=PATH_INFO:/suggestions/$1]
+RewriteRule ^api/products/([^/]+)/?$ /api/products.cfm [QSA,L,E=PATH_INFO:/$1]
+RewriteRule ^api/products/?$ /api/products.cfm [QSA,L,E=PATH_INFO:/api/products]
+
+# API Routes for Auth
+RewriteRule ^api/auth/login/?$ /api/auth.cfm [QSA,L,E=PATH_INFO:/login]
+RewriteRule ^api/auth/register/?$ /api/auth.cfm [QSA,L,E=PATH_INFO:/register]
+RewriteRule ^api/auth/logout/?$ /api/auth.cfm [QSA,L,E=PATH_INFO:/logout]
+RewriteRule ^api/auth/validate/?$ /api/auth.cfm [QSA,L,E=PATH_INFO:/validate]
+RewriteRule ^api/auth/me/?$ /api/auth.cfm [QSA,L,E=PATH_INFO:/me]
