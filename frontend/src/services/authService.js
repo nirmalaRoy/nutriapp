@@ -2,11 +2,6 @@ import axios from 'axios';
 
 // Create axios instance with base configuration
 const baseURL = process.env.REACT_APP_API_URL || 'http://localhost:8051';
-console.log('🔧 AuthService API Configuration:', {
-  baseURL,
-  envVar: process.env.REACT_APP_API_URL,
-  NODE_ENV: process.env.NODE_ENV
-});
 
 const api = axios.create({
   baseURL,

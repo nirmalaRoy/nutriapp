@@ -67,14 +67,14 @@
         })>
         
         <!--- Fix response structure for frontend compatibility --->
-        <cfif loginResult.success AND structKeyExists(loginResult, "sessionId")>
+        <cfif loginResult.success AND structKeyExists(loginResult, "session")>
             <cfset response = {
                 "success": loginResult.success,
                 "message": loginResult.message,
                 "user": loginResult.user,
                 "session": {
-                    "sessionId": loginResult.sessionId,
-                    "expiresAt": loginResult.expiresAt
+                    "sessionId": loginResult.session.sessionId,
+                    "expiresAt": loginResult.session.expiresAt
                 }
             }>
         <cfelse>
@@ -258,6 +258,40 @@
         <cfset statusCode = 401>
     </cfif>
     
+<cfelseif (findNoCase("/forgot-password", pathInfo) OR 
+           findNoCase("/forgot-password", requestURI) OR 
+           findNoCase("/auth.cfm/forgot-password", fullPath) OR
+           findNoCase("/forgot-password", fullPath)) AND httpMethod EQ "POST">
+    <!--- Forgot Password --->
+    <cfif structKeyExists(requestData, "email")>
+        <cfset forgotResult = application.authService.forgotPassword(requestData.email)>
+        <cfset response = forgotResult>
+        <cfset statusCode = forgotResult.success ? 200 : 400>
+    <cfelse>
+        <cfset response = {
+            "success": false,
+            "error": "Email address is required"
+        }>
+        <cfset statusCode = 400>
+    </cfif>
+    
+<cfelseif (findNoCase("/reset-password", pathInfo) OR 
+           findNoCase("/reset-password", requestURI) OR 
+           findNoCase("/auth.cfm/reset-password", fullPath) OR
+           findNoCase("/reset-password", fullPath)) AND httpMethod EQ "POST">
+    <!--- Reset Password --->
+    <cfif structKeyExists(requestData, "token") AND structKeyExists(requestData, "password")>
+        <cfset resetResult = application.authService.resetPassword(requestData.token, requestData.password)>
+        <cfset response = resetResult>
+        <cfset statusCode = resetResult.success ? 200 : 400>
+    <cfelse>
+        <cfset response = {
+            "success": false,
+            "error": "Reset token and new password are required"
+        }>
+        <cfset statusCode = 400>
+    </cfif>
+    
 <cfelse>
     <!--- Invalid endpoint or method --->
     <cfset response = {
@@ -268,7 +302,9 @@
             "POST /api/auth/register", 
             "POST /api/auth/logout",
             "GET /api/auth/validate",
-            "GET /api/auth/me"
+            "GET /api/auth/me",
+            "POST /api/auth/forgot-password",
+            "POST /api/auth/reset-password"
         ]
     }>
     <cfset statusCode = 404>

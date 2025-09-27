@@ -357,7 +357,28 @@
             </cfquery>
             
             <!--- Get the inserted ID and fetch the created record --->
-            <cfset var insertedId = insertInfo.generatedKey>
+            <cfset var insertedId = "">
+            <cfif structKeyExists(insertInfo, "generatedKey")>
+                <cfset insertedId = insertInfo.generatedKey>
+            <cfelseif structKeyExists(insertInfo, "generated_key")>
+                <cfset insertedId = insertInfo.generated_key>
+            <cfelseif structKeyExists(insertInfo, "GENERATEDKEY")>
+                <cfset insertedId = insertInfo.GENERATEDKEY>
+            <cfelseif structKeyExists(insertInfo, "GENERATED_KEY")>
+                <cfset insertedId = insertInfo.GENERATED_KEY>
+            <cfelseif structKeyExists(insertInfo, "insertId")>
+                <cfset insertedId = insertInfo.insertId>
+            <cfelseif structKeyExists(insertInfo, "lastInsertId")>
+                <cfset insertedId = insertInfo.lastInsertId>
+            <cfelse>
+                <!--- Use LAST_INSERT_ID() as fallback --->
+                <cfquery name="getLastInsert" datasource="#variables.datasource#">
+                    SELECT LAST_INSERT_ID() as lastId
+                </cfquery>
+                <cfif getLastInsert.recordCount GT 0>
+                    <cfset insertedId = getLastInsert.lastId>
+                </cfif>
+            </cfif>
             
             <!--- Fetch the created record to return full data --->
             <cfquery name="newRecord" datasource="#variables.datasource#">

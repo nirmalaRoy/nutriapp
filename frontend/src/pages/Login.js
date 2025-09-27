@@ -10,6 +10,8 @@ const Login = () => {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [forgotPasswordLoading, setForgotPasswordLoading] = useState(false);
+  const [forgotPasswordMessage, setForgotPasswordMessage] = useState('');
 
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -56,6 +58,44 @@ const Login = () => {
     }
   };
 
+  const handleForgotPassword = async () => {
+    if (!formData.email) {
+      setError('Please enter your email address first');
+      return;
+    }
+
+    if (!formData.email.includes('@')) {
+      setError('Please enter a valid email address');
+      return;
+    }
+
+    try {
+      setForgotPasswordLoading(true);
+      setError('');
+      setForgotPasswordMessage('');
+
+      const response = await fetch('http://localhost:8051/api/auth.cfm/forgot-password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email: formData.email })
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        setForgotPasswordMessage(result.message + (result.resetToken ? ` (Demo Token: ${result.resetToken})` : ''));
+      } else {
+        setError(result.error || 'Failed to send password reset email');
+      }
+    } catch (error) {
+      setError('An error occurred while sending reset email');
+    } finally {
+      setForgotPasswordLoading(false);
+    }
+  };
+
   return (
     <div className="auth-page">
       <div className="auth-container">
@@ -71,6 +111,12 @@ const Login = () => {
             {error && (
               <div className="alert alert-error">
                 {error}
+              </div>
+            )}
+
+            {forgotPasswordMessage && (
+              <div className="alert alert-success">
+                {forgotPasswordMessage}
               </div>
             )}
 
@@ -111,7 +157,7 @@ const Login = () => {
             <button 
               type="submit" 
               className="btn btn-primary auth-submit-btn"
-              disabled={loading}
+              disabled={loading || forgotPasswordLoading}
             >
               {loading ? (
                 <>
@@ -122,6 +168,25 @@ const Login = () => {
                 'Sign In'
               )}
             </button>
+
+            <div className="forgot-password-section" style={{marginTop: '15px', textAlign: 'center'}}>
+              <button 
+                type="button" 
+                onClick={handleForgotPassword}
+                className="btn btn-secondary"
+                disabled={loading || forgotPasswordLoading}
+                style={{fontSize: '14px'}}
+              >
+                {forgotPasswordLoading ? (
+                  <>
+                    <span className="loading-spinner"></span>
+                    Sending Reset Link...
+                  </>
+                ) : (
+                  'Forgot Password?'
+                )}
+              </button>
+            </div>
           </form>
 
           <div className="auth-footer">

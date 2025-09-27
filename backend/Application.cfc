@@ -26,6 +26,9 @@
     
     <cffunction name="onApplicationStart" returntype="boolean" output="false">
         <cftry>
+            <!--- Load mail configuration --->
+            <cfinclude template="mail-config.cfm">
+            
             <!--- Initialize all services for full API functionality --->
             <cfset application.dataService = createObject("component", "components.MySQLDataService").init()>
             <cfset application.productService = createObject("component", "components.ProductService")>

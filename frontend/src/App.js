@@ -5,6 +5,7 @@ import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import ResetPassword from './pages/ResetPassword';
 import ProductSearch from './pages/ProductSearch';
 import ProductDetails from './pages/ProductDetails';
 import AdminPanel from './pages/AdminPanel';
@@ -71,6 +72,14 @@ function App() {
                 element={
                   <PublicRoute>
                     <Register />
+                  </PublicRoute>
+                } 
+              />
+              <Route 
+                path="/reset-password" 
+                element={
+                  <PublicRoute>
+                    <ResetPassword />
                   </PublicRoute>
                 } 
               />
