@@ -1,13 +1,8 @@
 <cfcomponent displayname="Product Service" output="false">
 
     <cffunction name="init" returntype="ProductService" access="public" output="false">
-        <!--- Use the application-scoped dataService instead of creating our own --->
-        <cfif structKeyExists(application, "dataService")>
-            <cfset variables.dataService = application.dataService>
-        <cfelse>
-            <!--- Fallback to creating DataService if application service not available --->
-            <cfset variables.dataService = createObject("component", "DataService")>
-        </cfif>
+        <!--- Use the application-scoped dataService --->
+        <cfset variables.dataService = application.dataService>
         <cfset variables.ratingOrder = ["E", "D", "C", "B", "A"]><!--- Worst to Best --->
         
         <cfreturn this>

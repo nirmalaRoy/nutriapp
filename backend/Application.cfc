@@ -29,27 +29,17 @@
             <!--- Load mail configuration --->
             <cfinclude template="mail-config.cfm">
             
-            <!--- Initialize all services for full API functionality --->
+            <!--- Initialize services --->
             <cfset application.dataService = createObject("component", "components.MySQLDataService").init()>
             <cfset application.productService = createObject("component", "components.ProductService")>
             <cfset application.authService = createObject("component", "components.AuthService").init(application.dataService)>
             
-            <cflog file="application" text="NutriApp started with MySQL DataService" type="information">
+            <cflog file="application" text="NutriApp started successfully" type="information">
             <cfreturn true>
+            
             <cfcatch type="any">
-                <cflog file="application" text="MySQL DataService init failed: #cfcatch.message#" type="error">
-                <!--- Try to fall back to old DataService if MySQL fails --->
-                <cftry>
-                    <cfset application.dataService = createObject("component", "components.DataService").init()>
-                    <cfset application.productService = createObject("component", "components.ProductService")>
-                    <cfset application.authService = createObject("component", "components.AuthService").init(application.dataService)>
-                    
-                    <cflog file="application" text="Fallback to in-memory DataService" type="warning">
-                    <cfcatch type="any">
-                        <cflog file="application" text="Both MySQL and fallback DataService failed: #cfcatch.message#" type="error">
-                    </cfcatch>
-                </cftry>
-                <cfreturn true><!--- Continue with React fallback --->
+                <cflog file="application" text="Application initialization failed: #cfcatch.message#" type="error">
+                <cfreturn false>
             </cfcatch>
         </cftry>
     </cffunction>
