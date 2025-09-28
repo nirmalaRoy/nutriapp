@@ -121,31 +121,31 @@ const Home = () => {
         <section className="rating-system-section">
           <div className="card">
             <div className="card-header">
-              <h2 className="card-title">Our Rating System</h2>
+              <h2 className="card-title">Nutri-Score System</h2>
               <p className="card-subtitle">
-                We rate products from A (Best) to E (Worst) based on nutritional value, ingredients, and quality.
+                Products are automatically graded A (Excellent) to E (Very Poor) based on the European Nutri-Score algorithm, analyzing nutritional content including calories, sugar, fat, fiber, and protein.
               </p>
             </div>
             <div className="rating-badges">
               <div className="rating-badge rating-a">
                 <span className="rating-letter">A</span>
-                <span className="rating-name">Best</span>
+                <span className="rating-name">Excellent</span>
               </div>
               <div className="rating-badge rating-b">
                 <span className="rating-letter">B</span>
-                <span className="rating-name">Better</span>
+                <span className="rating-name">Good</span>
               </div>
               <div className="rating-badge rating-c">
                 <span className="rating-letter">C</span>
-                <span className="rating-name">Good</span>
+                <span className="rating-name">Fair</span>
               </div>
               <div className="rating-badge rating-d">
                 <span className="rating-letter">D</span>
-                <span className="rating-name">Bad</span>
+                <span className="rating-name">Poor</span>
               </div>
               <div className="rating-badge rating-e">
                 <span className="rating-letter">E</span>
-                <span className="rating-name">Worst</span>
+                <span className="rating-name">Very Poor</span>
               </div>
             </div>
           </div>

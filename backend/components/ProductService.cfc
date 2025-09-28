@@ -5,6 +5,9 @@
         <cfset variables.dataService = application.dataService>
         <cfset variables.ratingOrder = ["E", "D", "C", "B", "A"]><!--- Worst to Best --->
         
+        <!--- Initialize NutriScore Calculator --->
+        <cfset variables.nutriScoreCalculator = createObject("component", "NutriScoreCalculator").init()>
+        
         <cfreturn this>
     </cffunction>
     
@@ -243,8 +246,8 @@
         <cfargument name="userId" type="string" required="true">
         
         <cftry>
-            <!--- Validate required fields --->
-            <cfset var requiredFields = ["name", "brand", "category", "rating"]>
+            <!--- Validate required fields (rating is now auto-calculated) --->
+            <cfset var requiredFields = ["name", "brand", "category"]>
             
             <cfloop array="#requiredFields#" index="field">
                 <cfif NOT structKeyExists(arguments.productData, field) OR len(arguments.productData[field]) EQ 0>
@@ -255,16 +258,20 @@
                 </cfif>
             </cfloop>
             
-            <!--- Validate rating --->
-            <cfif NOT arrayFind(variables.ratingOrder, arguments.productData.rating)>
-                <cfreturn {
-                    "success": false,
-                    "error": "Invalid rating. Must be A, B, C, D, or E"
-                }>
+            <!--- Calculate grade based on nutrition facts --->
+            <cfset var calculatedGrade = "E"> <!--- Default grade --->
+            <cfif structKeyExists(arguments.productData, "nutritionFacts") AND isStruct(arguments.productData.nutritionFacts)>
+                <cftry>
+                    <cfset calculatedGrade = variables.nutriScoreCalculator.calculateGrade(arguments.productData.nutritionFacts)>
+                    <cfcatch type="any">
+                        <cfset calculatedGrade = "E"> <!--- Default to E if calculation fails --->
+                    </cfcatch>
+                </cftry>
             </cfif>
             
             <!--- Create product document --->
             <cfset var newProduct = duplicate(arguments.productData)>
+            <cfset newProduct.rating = calculatedGrade> <!--- Use calculated grade --->
             <cfset newProduct.createdAt = dateTimeFormat(now(), "iso8601")>
             <cfset newProduct.updatedAt = dateTimeFormat(now(), "iso8601")>
             <cfset newProduct.createdBy = arguments.userId>
@@ -383,16 +390,20 @@
                 }>
             </cfif>
             
-            <!--- Validate rating if provided --->
-            <cfif structKeyExists(arguments.productData, "rating") AND NOT arrayFind(variables.ratingOrder, arguments.productData.rating)>
-                <cfreturn {
-                    "success": false,
-                    "error": "Invalid rating. Must be A, B, C, D, or E"
-                }>
+            <!--- Calculate grade based on nutrition facts --->
+            <cfset var calculatedGrade = "E"> <!--- Default grade --->
+            <cfif structKeyExists(arguments.productData, "nutritionFacts") AND isStruct(arguments.productData.nutritionFacts)>
+                <cftry>
+                    <cfset calculatedGrade = variables.nutriScoreCalculator.calculateGrade(arguments.productData.nutritionFacts)>
+                    <cfcatch type="any">
+                        <cfset calculatedGrade = "E"> <!--- Default to E if calculation fails --->
+                    </cfcatch>
+                </cftry>
             </cfif>
             
             <!--- Create update document --->
             <cfset var updateData = duplicate(arguments.productData)>
+            <cfset updateData.rating = calculatedGrade> <!--- Use calculated grade --->
             <cfset updateData.updatedAt = dateTimeFormat(now(), "iso8601")>
             <cfset updateData.updatedBy = arguments.userId>
             

@@ -69,8 +69,17 @@
   border-radius: 8px;
   color: white;
   font-weight: 600;
-  min-width: 60px;
+  min-width: 70px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.nutri-score-label-small {
+  font-size: 0.65rem;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  opacity: 0.9;
+  margin-bottom: 0.1rem;
 }
 
 .rating-letter {

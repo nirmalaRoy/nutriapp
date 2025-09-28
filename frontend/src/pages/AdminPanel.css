@@ -322,6 +322,119 @@
   }
 }
 
+/* Nutri-Score display styles */
+.nutri-score-preview,
+.nutri-score-current {
+  background-color: #f7fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 0.75rem;
+}
+
+.nutri-score-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.nutri-score-badge.current {
+  margin-bottom: 0.5rem;
+}
+
+.nutri-score-letter {
+  color: white;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.nutri-score-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.nutri-score-label {
+  font-size: 0.9rem;
+  color: #4a5568;
+  font-weight: 500;
+}
+
+.nutri-score-note {
+  font-size: 0.75rem;
+  color: #718096;
+  font-style: italic;
+}
+
+.nutri-score-breakdown {
+  background-color: #fff;
+  border-radius: 6px;
+  padding: 0.5rem;
+  margin-top: 0.5rem;
+  border: 1px solid #e2e8f0;
+}
+
+.breakdown-header {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #4a5568;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.25rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.breakdown-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.3rem 0;
+  border-bottom: 1px solid #f7fafc;
+}
+
+.breakdown-item:last-child {
+  border-bottom: none;
+}
+
+.breakdown-item.positive .breakdown-label {
+  color: #38a169;
+  position: relative;
+}
+
+.breakdown-item.positive .breakdown-label::before {
+  content: '✓';
+  position: absolute;
+  left: -15px;
+  color: #38a169;
+  font-weight: bold;
+  font-size: 0.8rem;
+}
+
+.breakdown-label {
+  font-size: 0.85rem;
+  color: #4a5568;
+  font-weight: 500;
+  padding-left: 15px;
+}
+
+.breakdown-value {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #2d3748;
+  background-color: #f7fafc;
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+}
+
 @media (max-width: 768px) {
   .admin-panel {
     padding: 1rem 0;

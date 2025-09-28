@@ -16,11 +16,11 @@ const ProductCard = ({ product, showSuggestions = false, isAdmin = false, onEdit
 
   const getRatingName = (rating) => {
     const names = {
-      'A': 'Best',
-      'B': 'Better',
-      'C': 'Good',
-      'D': 'Bad',
-      'E': 'Worst'
+      'A': 'Excellent',
+      'B': 'Good',
+      'C': 'Fair', 
+      'D': 'Poor',
+      'E': 'Very Poor'
     };
     return names[rating] || rating;
   };
@@ -34,6 +34,7 @@ const ProductCard = ({ product, showSuggestions = false, isAdmin = false, onEdit
     <div className={`product-card ${isAdmin ? 'admin-mode' : ''}`}>
       <div className="product-card-header">
         <div className="product-rating" style={{ backgroundColor: getRatingColor(product.rating) }}>
+          <div className="nutri-score-label-small">Nutri-Score</div>
           <span className="rating-letter">{product.rating}</span>
           <span className="rating-name">{getRatingName(product.rating)}</span>
         </div>

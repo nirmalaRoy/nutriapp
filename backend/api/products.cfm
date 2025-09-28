@@ -7,6 +7,9 @@
 <cfheader name="Access-Control-Allow-Headers" value="Content-Type,Authorization,X-Requested-With">
 <cfheader name="Access-Control-Max-Age" value="3600">
 
+<!--- Initialize NutriScore Calculator --->
+<cfset nutriScoreCalculator = createObject("component", "components.NutriScoreCalculator").init()>
+
 <!--- Handle preflight OPTIONS request --->
 <cfif cgi.request_method EQ "OPTIONS">
     <cfheader statuscode="200" statustext="OK">
@@ -20,12 +23,7 @@
     <cfif cgi.request_method EQ "GET">
         
         <!--- Check for pathInfo to handle different endpoints --->
-        <cfset pathInfo = "">
-        <cfif structKeyExists(url, "pathInfo")>
-            <cfset pathInfo = url.pathInfo>
-        <cfelseif structKeyExists(cgi, "PATH_INFO") AND len(cgi.PATH_INFO)>
-            <cfset pathInfo = cgi.PATH_INFO>
-        </cfif>
+        <cfset pathInfo = structKeyExists(url, "pathInfo") ? url.pathInfo : "">
         
         <!--- Handle categories endpoint --->
         <cfif pathInfo EQ "/categories">
@@ -314,7 +312,18 @@
         <!--- Generate unique ID --->
         <cfset productId = replace(createUUID(), "-", "", "all")>
         
-        <!--- Insert new product --->
+        <!--- Calculate grade based on nutrition facts --->
+        <cfset calculatedGrade = "E"> <!--- Default grade --->
+        <cfif structKeyExists(productData, 'nutritionFacts') AND isStruct(productData.nutritionFacts)>
+            <cftry>
+                <cfset calculatedGrade = nutriScoreCalculator.calculateGrade(productData.nutritionFacts)>
+                <cfcatch type="any">
+                    <cfset calculatedGrade = "E"> <!--- Default to E if calculation fails --->
+                </cfcatch>
+            </cftry>
+        </cfif>
+        
+        <!--- Insert new product with calculated grade --->
         <cfquery name="insertProduct" datasource="nutriapp">
             INSERT INTO products (
                 id, name, brand, category, rating, description, 
@@ -324,7 +333,7 @@
                 <cfqueryparam value="#productData.name#" cfsqltype="cf_sql_varchar">,
                 <cfqueryparam value="#productData.brand#" cfsqltype="cf_sql_varchar">,
                 <cfqueryparam value="#productData.category#" cfsqltype="cf_sql_varchar">,
-                <cfqueryparam value="#productData.rating#" cfsqltype="cf_sql_varchar">,
+                <cfqueryparam value="#calculatedGrade#" cfsqltype="cf_sql_varchar">,
                 <cfqueryparam value="#structKeyExists(productData, 'description') ? productData.description : ''#" cfsqltype="cf_sql_varchar">,
                 <cfqueryparam value="#structKeyExists(productData, 'ingredients') ? serializeJSON(productData.ingredients) : '[]'#" cfsqltype="cf_sql_longvarchar">,
                 <cfqueryparam value="#structKeyExists(productData, 'nutritionFacts') ? serializeJSON(productData.nutritionFacts) : '{}'#" cfsqltype="cf_sql_longvarchar">,
@@ -342,7 +351,7 @@
                 "name": productData.name,
                 "brand": productData.brand,
                 "category": productData.category,
-                "rating": productData.rating,
+                "rating": calculatedGrade,
                 "description": structKeyExists(productData, 'description') ? productData.description : "",
                 "ingredients": structKeyExists(productData, 'ingredients') ? productData.ingredients : [],
                 "nutritionFacts": structKeyExists(productData, 'nutritionFacts') ? productData.nutritionFacts : {},
@@ -353,12 +362,7 @@
         
     <!--- Handle PUT request (Update Product) --->
     <cfelseif cgi.request_method EQ "PUT">
-        <cfset pathInfo = "">
-        <cfif structKeyExists(url, "pathInfo")>
-            <cfset pathInfo = url.pathInfo>
-        <cfelseif structKeyExists(cgi, "PATH_INFO") AND len(cgi.PATH_INFO)>
-            <cfset pathInfo = cgi.PATH_INFO>
-        </cfif>
+        <cfset pathInfo = structKeyExists(url, "pathInfo") ? url.pathInfo : "">
         
         <!--- Extract product ID from path --->
         <cfif len(pathInfo) GT 1 AND left(pathInfo, 1) EQ "/">
@@ -379,13 +383,24 @@
                 }>
                 <cfheader statuscode="404">
             <cfelse>
-                <!--- Update product --->
+                <!--- Calculate grade based on nutrition facts --->
+                <cfset calculatedGrade = "E"> <!--- Default grade --->
+                <cfif structKeyExists(productData, 'nutritionFacts') AND isStruct(productData.nutritionFacts)>
+                    <cftry>
+                        <cfset calculatedGrade = nutriScoreCalculator.calculateGrade(productData.nutritionFacts)>
+                        <cfcatch type="any">
+                            <cfset calculatedGrade = "E"> <!--- Default to E if calculation fails --->
+                        </cfcatch>
+                    </cftry>
+                </cfif>
+                
+                <!--- Update product with calculated grade --->
                 <cfquery name="updateProduct" datasource="nutriapp">
                     UPDATE products SET
                         name = <cfqueryparam value="#productData.name#" cfsqltype="cf_sql_varchar">,
                         brand = <cfqueryparam value="#productData.brand#" cfsqltype="cf_sql_varchar">,
                         category = <cfqueryparam value="#productData.category#" cfsqltype="cf_sql_varchar">,
-                        rating = <cfqueryparam value="#productData.rating#" cfsqltype="cf_sql_varchar">,
+                        rating = <cfqueryparam value="#calculatedGrade#" cfsqltype="cf_sql_varchar">,
                         description = <cfqueryparam value="#structKeyExists(productData, 'description') ? productData.description : ''#" cfsqltype="cf_sql_varchar">,
                         ingredients = <cfqueryparam value="#structKeyExists(productData, 'ingredients') ? serializeJSON(productData.ingredients) : '[]'#" cfsqltype="cf_sql_longvarchar">,
                         nutrition_facts = <cfqueryparam value="#structKeyExists(productData, 'nutritionFacts') ? serializeJSON(productData.nutritionFacts) : '{}'#" cfsqltype="cf_sql_longvarchar">,
@@ -402,7 +417,7 @@
                         "name": productData.name,
                         "brand": productData.brand,
                         "category": productData.category,
-                        "rating": productData.rating,
+                        "rating": calculatedGrade,
                         "description": structKeyExists(productData, 'description') ? productData.description : "",
                         "ingredients": structKeyExists(productData, 'ingredients') ? productData.ingredients : [],
                         "nutritionFacts": structKeyExists(productData, 'nutritionFacts') ? productData.nutritionFacts : {},
@@ -421,12 +436,7 @@
         
     <!--- Handle DELETE request (Delete Product) --->
     <cfelseif cgi.request_method EQ "DELETE">
-        <cfset pathInfo = "">
-        <cfif structKeyExists(url, "pathInfo")>
-            <cfset pathInfo = url.pathInfo>
-        <cfelseif structKeyExists(cgi, "PATH_INFO") AND len(cgi.PATH_INFO)>
-            <cfset pathInfo = cgi.PATH_INFO>
-        </cfif>
+        <cfset pathInfo = structKeyExists(url, "pathInfo") ? url.pathInfo : "">
         
         <!--- Extract product ID from path --->
         <cfif len(pathInfo) GT 1 AND left(pathInfo, 1) EQ "/">

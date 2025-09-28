@@ -23,7 +23,6 @@ const AdminPanel = () => {
     name: '',
     brand: '',
     category: '',
-    rating: '',
     description: '',
     price: '',
     ingredients: '',
@@ -124,7 +123,6 @@ const AdminPanel = () => {
         name: productForm.name.trim(),
         brand: productForm.brand.trim(),
         category: productForm.category,
-        rating: productForm.rating,
         description: productForm.description.trim(),
         price: productForm.price ? parseFloat(productForm.price) : undefined
       };
@@ -181,7 +179,6 @@ const AdminPanel = () => {
       name: '',
       brand: '',
       category: '',
-      rating: '',
       description: '',
       price: '',
       ingredients: '',
@@ -209,7 +206,6 @@ const AdminPanel = () => {
       name: product.name || '',
       brand: product.brand || '',
       category: product.category || '',
-      rating: product.rating || '',
       description: product.description || '',
       price: product.price || '',
       ingredients: Array.isArray(product.ingredients) ? product.ingredients.join(', ') : '',
@@ -324,6 +320,51 @@ const AdminPanel = () => {
 
   const getProductsByRating = (rating) => {
     return products.filter(product => product.rating === rating);
+  };
+
+  // Calculate Nutri-Score preview based on current nutrition input
+  const calculateNutriScorePreview = (nutritionFacts) => {
+    const calories = parseFloat(nutritionFacts.calories) || 0;
+    const sugar = parseFloat(nutritionFacts.sugar) || 0;
+    const fat = parseFloat(nutritionFacts.fat) || 0;
+    const fiber = parseFloat(nutritionFacts.fiber) || 0;
+    const protein = parseFloat(nutritionFacts.protein) || 0;
+
+    // Calculate points (simplified version of backend logic)
+    let caloriesPoints = 0;
+    if (calories > 80) caloriesPoints = Math.min(Math.floor((calories - 80) / 80) + 1, 10);
+    
+    let sugarPoints = 0;
+    if (sugar > 4.5) sugarPoints = Math.min(Math.floor((sugar - 4.5) / 4.5) + 1, 10);
+    
+    let fatPoints = 0;
+    if (fat > 1) fatPoints = Math.min(Math.floor(fat), 10);
+    
+    let fiberPoints = Math.min(Math.floor(fiber / 0.9), 5);
+    let proteinPoints = Math.min(Math.floor(protein / 1.6), 5);
+
+    const negativePoints = caloriesPoints + sugarPoints + fatPoints;
+    const positivePoints = fiberPoints + proteinPoints;
+    const nutritionalScore = negativePoints - positivePoints;
+
+    // Determine grade
+    if (nutritionalScore <= -1) return 'A';
+    if (nutritionalScore >= 0 && nutritionalScore <= 2) return 'B';
+    if (nutritionalScore >= 3 && nutritionalScore <= 10) return 'C';
+    if (nutritionalScore >= 11 && nutritionalScore <= 18) return 'D';
+    return 'E';
+  };
+
+  // Get color for nutri-score grade
+  const getNutriScoreColor = (grade) => {
+    const colors = {
+      'A': '#2d5a27', // Dark green
+      'B': '#6a8a3a', // Light green  
+      'C': '#d69e2e', // Yellow
+      'D': '#dd6b20', // Orange
+      'E': '#e53e3e'  // Red
+    };
+    return colors[grade] || '#667eea';
   };
 
   if (!user || user.role !== 'admin') {
@@ -460,21 +501,28 @@ const AdminPanel = () => {
                       </div>
 
                       <div className="form-group">
-                        <label className="form-label">Rating *</label>
-                        <select
-                          name="rating"
-                          value={productForm.rating}
-                          onChange={handleFormInputChange}
-                          className="form-select"
-                          required
-                        >
-                          <option value="">Select Rating</option>
-                          {ratings.map(rating => (
-                            <option key={rating.code} value={rating.code}>
-                              {rating.code} - {rating.name}
-                            </option>
-                          ))}
-                        </select>
+                        <label className="form-label">Nutri-Score</label>
+                        <div className="nutri-score-preview">
+                          <div className="nutri-score-badge">
+                            {(() => {
+                              const previewGrade = calculateNutriScorePreview(productForm.nutritionFacts);
+                              return (
+                                <>
+                                  <span 
+                                    className="nutri-score-letter" 
+                                    style={{ backgroundColor: getNutriScoreColor(previewGrade) }}
+                                  >
+                                    {previewGrade}
+                                  </span>
+                                  <div className="nutri-score-info">
+                                    <span className="nutri-score-label">Preview</span>
+                                    <small className="nutri-score-note">Based on nutrition data</small>
+                                  </div>
+                                </>
+                              );
+                            })()}
+                          </div>
+                        </div>
                       </div>
 
                       <div className="form-group">
@@ -647,21 +695,48 @@ const AdminPanel = () => {
                       </div>
 
                       <div className="form-group">
-                        <label className="form-label">Rating *</label>
-                        <select
-                          name="rating"
-                          value={productForm.rating}
-                          onChange={handleFormInputChange}
-                          className="form-select"
-                          required
-                        >
-                          <option value="">Select rating</option>
-                          {ratings.map(rating => (
-                            <option key={rating.code} value={rating.code}>
-                              {rating.code} - {rating.name}
-                            </option>
-                          ))}
-                        </select>
+                        <label className="form-label">Nutri-Score</label>
+                        <div className="nutri-score-current">
+                          <div className="nutri-score-badge current">
+                            <span 
+                              className="nutri-score-letter" 
+                              style={{ backgroundColor: getNutriScoreColor(editingProduct?.rating || 'E') }}
+                            >
+                              {editingProduct?.rating || 'E'}
+                            </span>
+                            <div className="nutri-score-info">
+                              <span className="nutri-score-label">Current Score</span>
+                              <small className="nutri-score-note">Will update on save</small>
+                            </div>
+                          </div>
+                          {editingProduct?.nutritionFacts && (
+                            <div className="nutri-score-breakdown">
+                              <div className="breakdown-header">
+                                <span>Nutritional Values</span>
+                              </div>
+                              <div className="breakdown-item">
+                                <span className="breakdown-label">Calories:</span>
+                                <span className="breakdown-value">{editingProduct.nutritionFacts.calories || 0}</span>
+                              </div>
+                              <div className="breakdown-item">
+                                <span className="breakdown-label">Sugar:</span>
+                                <span className="breakdown-value">{editingProduct.nutritionFacts.sugar || 0}g</span>
+                              </div>
+                              <div className="breakdown-item">
+                                <span className="breakdown-label">Fat:</span>
+                                <span className="breakdown-value">{editingProduct.nutritionFacts.fat || 0}g</span>
+                              </div>
+                              <div className="breakdown-item positive">
+                                <span className="breakdown-label">Fiber:</span>
+                                <span className="breakdown-value">{editingProduct.nutritionFacts.fiber || 0}g</span>
+                              </div>
+                              <div className="breakdown-item positive">
+                                <span className="breakdown-label">Protein:</span>
+                                <span className="breakdown-value">{editingProduct.nutritionFacts.protein || 0}g</span>
+                              </div>
+                            </div>
+                          )}
+                        </div>
                       </div>
 
                       <div className="form-group form-group-full">
